@@ -51,6 +51,15 @@ class SetTableGenerator(object):
 
 		return follow_set
 
+	def build_first_plus_set(self, first_set, follow_set):
+		first_plus_set = {}
+		for idx, production in enumerate(self.grammar.production):
+			if "EPSILON" in first_set[production.right_hand[0].lexeme]:
+				first_plus_set[idx] = first_set[production.right_hand[0].lexeme].union(follow_set[production.left_hand.lexeme])
+			else:
+				first_plus_set[idx] = set(first_set[production.right_hand[0].lexeme])
+		return first_plus_set
+
 	def is_changing(self, new_set, old_set):
 		# print old_set
 		for key, value in old_set.items():

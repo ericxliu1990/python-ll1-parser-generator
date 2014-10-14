@@ -3,7 +3,11 @@ a hand-coded recursive-descent parser for MBNF
 """
 from collections import namedtuple
 import re
-Production = namedtuple("Production",["left_hand", "right_hand"])
+class Production(namedtuple("Production",["left_hand", "right_hand"])):
+	"""docstring for Production"""
+	def __repr__(self):
+		return "%s -> " % self.left_hand.lexeme + " ".join([an_item.lexeme for an_item in self.right_hand])
+
 Token = namedtuple("Token", ["type", "lexeme"])
 Grammar = namedtuple("Grammar",["term", "non_term", "production", "goal"])
 class MbnfParser():
