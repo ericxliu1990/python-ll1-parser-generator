@@ -55,10 +55,10 @@ def main():
 	a_set_table_generator = set_table_generator.SetTableGenerator(grammar)
 	first_set = a_set_table_generator.build_first_set()
 	follow_set = a_set_table_generator.build_follow_set(first_set)
-	first_plus_set, production_map = a_set_table_generator.build_first_plus_set(first_set, follow_set)
-	ll1_table = a_set_table_generator.build_ll1_table(first_plus_set, production_map)
-	print "first_set:", first_set
-	print "follow_set:", follow_set
+	first_plus_set, production_map, production_left_hand_map = a_set_table_generator.build_first_plus_set(first_set, follow_set)
+	ll1_table = a_set_table_generator.build_ll1_table(first_plus_set,production_left_hand_map)
+	# print "first_set:", first_set
+	# print "follow_set:", follow_set
 	print "first_plus_set", first_plus_set
 	print "production_map", production_map
 	print "ll1_table", ll1_table

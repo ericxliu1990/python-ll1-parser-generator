@@ -54,19 +54,21 @@ class SetTableGenerator(object):
 	def build_first_plus_set(self, first_set, follow_set):
 		first_plus_set = {}
 		production_map = {}
+		production_left_hand_map = {}
 		for idx, production in enumerate(self.grammar.production):
 			production_map[idx] = repr(production)
+			production_left_hand_map[idx] = production.left_hand.lexeme
 			if "EPSILON" in first_set[production.right_hand[0].lexeme]:
 				first_plus_set[idx] = first_set[production.right_hand[0].lexeme].union(follow_set[production.left_hand.lexeme])
 			else:
 				first_plus_set[idx] = set(first_set[production.right_hand[0].lexeme])
-		return first_plus_set, production_map
+		return first_plus_set, production_map, production_left_hand_map
 
-	def build_ll1_table(self, first_plus_set):
+	def build_ll1_table(self, first_plus_set, production_left_hand_map):
 		ll1_table = {key: {key: "-" for key in self.grammar.term} for key in self.grammar.non_term}
-		# for production in first_plus_set:
-		# 	for key,an_item in production.items():
-		# 		ll1_table[][]
+		for key, production in first_plus_set.items():
+			for an_item in production:
+				ll1_table[production_left_hand_map[key]][an_item] = key
 		return ll1_table
 
 	def is_changing(self, new_set, old_set):
