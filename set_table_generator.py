@@ -4,11 +4,6 @@ class SetTableGenerator(object):
 		self.grammar = grammar
 
 	def build_first_set(self):
-		def is_changing(old_first_set):
-			for key, value in old_first_set.items():
-				if len(value.symmetric_difference(first_set[key])) is not 0:
-					return True
-			return False
 		changed = True
 		first_set = {key: set([key]) for key in self.grammar.term}
 		first_set.update({"EOF": set(["EOF"])})
@@ -28,8 +23,37 @@ class SetTableGenerator(object):
 				if idx == len(production.right_hand) - 1 and "EPSILON" in first_set[production.right_hand[-1].lexeme]:
 					right_hand = right_hand.union(set(["EPSILON"]))
 				first_set[production.left_hand.lexeme] = first_set[production.left_hand.lexeme].union(right_hand)
-			changed = is_changing(old_first_set)
-			# print old_first_set
-
+			changed = self.is_changing(first_set, old_first_set)
+			# print "first_set", old_first_set
 		return first_set
-		
+
+	def build_follow_set(self, first_set):
+		follow_set = {key: set([]) for key in self.grammar.non_term}
+		follow_set.update({self.grammar.goal.pop(): set(["EOF"])})
+		changed = True
+		while changed:
+			old_follow_set = dict(follow_set)
+			
+			for production in self.grammar.production:
+				#really important new deep copy the set
+				trailer = set(follow_set[production.left_hand.lexeme])
+				for idx in reversed(xrange(0, len(production.right_hand))): 
+					if production.right_hand[idx].lexeme in self.grammar.non_term:
+						follow_set[production.right_hand[idx].lexeme] = follow_set[production.right_hand[idx].lexeme].union(trailer)
+						if "EPSILON" in first_set[production.right_hand[idx].lexeme]:
+							trailer.update(first_set[production.right_hand[idx].lexeme] - set(["EPSILON"]))
+						else:
+							trailer = first_set[production.right_hand[idx].lexeme]
+					else:
+						trailer = set([production.right_hand[idx].lexeme])
+			# print "old", old_follow_set
+			changed = self.is_changing(follow_set, old_follow_set)
+
+		return follow_set
+
+	def is_changing(self, new_set, old_set):
+		# print old_set
+		for key, value in old_set.items():
+			if len(value.symmetric_difference(new_set[key])) is not 0:
+				return True
+		return False		

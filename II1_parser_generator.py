@@ -54,7 +54,9 @@ def main():
 	grammar = a_mbnf_parser.parse()
 	a_set_table_generator = set_table_generator.SetTableGenerator(grammar)
 	first_set = a_set_table_generator.build_first_set()
-	print first_set
+	follow_set = a_set_table_generator.build_follow_set(first_set)
+	print "first_set:", first_set
+	print "follow_set:", follow_set
 
 
 
