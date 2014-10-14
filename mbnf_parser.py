@@ -58,7 +58,7 @@ class MbnfParser():
 			return set([production.left_hand for production in text])
 
 		def build_term(text):
-			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is "SYMBOL"])
+			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is not "NON_TERM"])
 
 		def build_goal(text):
 			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is "NON_TERM"])
