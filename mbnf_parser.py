@@ -3,6 +3,7 @@ a hand-coded recursive-descent parser for MBNF
 """
 from collections import namedtuple
 import re
+
 class Production(namedtuple("Production",["left_hand", "right_hand"])):
 	"""docstring for Production"""
 	def __repr__(self):
@@ -10,6 +11,7 @@ class Production(namedtuple("Production",["left_hand", "right_hand"])):
 
 Token = namedtuple("Token", ["type", "lexeme"])
 Grammar = namedtuple("Grammar",["term", "non_term", "production", "goal"])
+
 class MbnfParser():
 	"""docstring for mbnf_parser"""
 	def __init__(self, file):
@@ -66,9 +68,14 @@ class MbnfParser():
 
 		def build_goal(text):
 			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is "NON_TERM"])
+		def is_goal_valid(goal_set):
+			if len(goal_set) == 1:
+				return goal_set.pop()
+			else:
+				raise ValueError
 		production_list = tokzr_alsoderives(toker_production(tokzr_sent(self.mbnf_input)))
 		non_term_set = build_non_term(production_list)
 		production_list = tokzr_right_hand(production_list)
 		term_set = build_term(production_list)
-		goal_set = build_goal(production_list)
-		return Grammar(term = term_set, non_term = non_term_set, production = production_list, goal = goal_set)
+		goal = is_goal_valid(build_goal(production_list))
+		return Grammar(term = term_set, non_term = non_term_set, production = production_list, goal = goal)

@@ -1,0 +1,3 @@
+EOF = "<EOF>"
+EPSILON = "EPSILON"
+ERROR_MARKER = "--"
