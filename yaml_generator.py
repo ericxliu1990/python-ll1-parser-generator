@@ -35,15 +35,15 @@ class YamlGenerator(object):
 				for key, value in a_dict.items()])
 
 		def convert_dict_dict_str(a_dict):
-			return "\n\t%s" % ("\n\t".join(["%s: %s" % (key, convert_dict_str(value)) 
+			return "\n  %s" % ("\n  ".join(["%s: %s" % (key, convert_dict_str(value)) 
 				for key, value in a_dict.items()]))
 
 		def convert_dict_list_str(a_dict):
-			return "{%s}" % (", \n\t".join(["%s: %s" % (key, convert_list_str(value)) 
+			return "{%s}" % (", \n ".join(["%s: %s" % (key, convert_list_str(value)) 
 				for key, value in a_dict.items()]))
 
 		def convert_dict_dict_list_str(a_dict):
-			return "\n\t%s" % ("\n\t".join(["%s: %s" % (key, convert_dict_list_str(value)) 
+			return "\n  %s" % ("\n  ".join(["%s: %s" % (key, convert_dict_list_str(value)) 
 				for key, value in a_dict.items()]))
 		
 		return YAML_OUTPUT % (convert_list_str(list(self.grammar.term)), 
@@ -55,6 +55,4 @@ class YamlGenerator(object):
 								convert_dict_dict_str(ll1_table))
 
 	def convert_production(self):
-				return {idx : {production.left_hand.lexeme : [item.lexeme 
-					for item in production.right_hand]} 
-					for idx, production in enumerate(self.grammar.production)}
+				return {idx : {production.left_hand.lexeme : [item.lexeme for item in production.right_hand if item.lexeme is not EPSILON]} for idx, production in enumerate(self.grammar.production)}

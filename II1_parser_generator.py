@@ -46,10 +46,10 @@ def arguments_parse():
 		type = lambda x: is_valid_file(argument_parser, x))
 	arguments = argument_parser.parse_args()
 	# print arguments.t,arguments.s,arguments.r, arguments.filename
-	return arguments
+	return arguments, argument_parser
 
 def main():
-	arguments = arguments_parse()
+	arguments, argument_parser = arguments_parse()
 	a_mbnf_parser = mbnf_parser.MbnfParser(arguments.filename)
 	if arguments.r:
 		a_mbnf_parser.remove_left_recursion()
@@ -60,14 +60,15 @@ def main():
 	first_plus_set, production_map, production_left_hand_map = tbl_gen.build_first_plus_set(first_set, follow_set)
 	ll1_table = tbl_gen.build_ll1_table(first_plus_set,production_left_hand_map)
 	yaml_gen = yaml_generator.YamlGenerator(grammar)
-	print "first_set:", first_set
-	print "follow_set:", follow_set
-	print "first_plus_set", first_plus_set
-	print "production_map", production_map
-	# print "ll1_table", ll1_table
-	print yaml_gen.print_yaml(ll1_table)
-
-
+	if arguments.t:
+		print yaml_gen.print_yaml(ll1_table)
+	if arguments.s:
+		print "production_map", production_map
+		print "first_set:", first_set
+		print "follow_set:", follow_set
+		print "first_plus_set", first_plus_set
+	if not arguments.t and not arguments.s:
+		argument_parser.print_help()
 
 if __name__ == '__main__':
 	main()

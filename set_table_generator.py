@@ -1,4 +1,5 @@
-from ll1_symbols import * 
+from ll1_symbols import *
+from collections import OrderedDict 
 
 class SetTableGenerator(object):
 	"""docstring for SetTableGenerator"""
@@ -8,7 +9,7 @@ class SetTableGenerator(object):
 	def build_first_set(self):
 		changed = True
 		first_set = {key: set([key]) for key in self.grammar.term}
-		first_set.update({EOF: set([EOF])})
+		first_set.update({EOF: set([EOF]), EPSILON: set([EPSILON])})
 		first_set.update({key: set([]) for key in self.grammar.non_term})
 		# return first_set
 		while changed:
@@ -67,10 +68,17 @@ class SetTableGenerator(object):
 		return first_plus_set, production_map, production_left_hand_map
 
 	def build_ll1_table(self, first_plus_set, production_left_hand_map):
+		def build_symbal_map():
+			return {key: value for value, key in enumerate(self.grammar.term)}
+		# ll1_table = OrderedDict({key: OrderedDict({key: ERROR_MARKER for key in self.grammar.term}) for key in self.grammar.non_term})
 		ll1_table = {key: {key: ERROR_MARKER for key in self.grammar.term} for key in self.grammar.non_term}
+		# print "self.grammar.term", self.grammar.term
 		for key, production in first_plus_set.items():
 			for an_item in production:
-				ll1_table[production_left_hand_map[key]][an_item] = key
+				# don't know this is right or wrong, just rule out epsilion
+				if an_item is not EPSILON:
+					ll1_table[production_left_hand_map[key]][an_item] = key
+		# print build_symbal_map()
 		return ll1_table
 	
 	def is_changing(self, new_set, old_set):
