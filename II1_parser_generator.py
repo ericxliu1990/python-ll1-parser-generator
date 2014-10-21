@@ -51,9 +51,7 @@ def arguments_parse():
 def main():
 	arguments, argument_parser = arguments_parse()
 	a_mbnf_parser = mbnf_parser.MbnfParser(arguments.filename)
-	if arguments.r:
-		a_mbnf_parser.remove_left_recursion()
-	grammar = a_mbnf_parser.parse()
+	grammar = a_mbnf_parser.parse(arguments.r)
 	tbl_gen = set_table_generator.SetTableGenerator(grammar)
 	first_set = tbl_gen.build_first_set()
 	follow_set = tbl_gen.build_follow_set(first_set)
@@ -67,8 +65,8 @@ def main():
 		print "first_set:", first_set
 		print "follow_set:", follow_set
 		print "first_plus_set", first_plus_set
-	if not arguments.t and not arguments.s:
-		argument_parser.print_help()
+	# if not arguments.t and not arguments.s:
+		# argument_parser.print_help()
 
 if __name__ == '__main__':
 	main()
