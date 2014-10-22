@@ -75,7 +75,7 @@ class MbnfParser():
 		production_list = tokzr_right_hand(production_list)
 		if rm_left_recur:
 			rm_recur_engine = rm_recur.RmRecurEngine(production_list, non_term_set)
-			rm_recur_engine.remove_recur(rm_indirect_recur = False)
+			rm_recur_engine.remove_recur(rm_indirect_recur = True)
 			production_list = rm_recur_engine.get_prodc_list()
 			non_term_set = rm_recur_engine.get_non_term_set()
 		term_set = build_term(production_list)
