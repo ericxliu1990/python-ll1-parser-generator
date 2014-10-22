@@ -2,7 +2,6 @@ import argparse, os
 import mbnf_parser
 import set_table_generator
 import yaml_generator
-
 DESCRIPTION = """
 An LL(1) parser generator for COMP 412 Lab2.
 A scanner and a hand-coded recursive-descent parser reads the Modified
@@ -55,7 +54,7 @@ def main():
 	tbl_gen = set_table_generator.SetTableGenerator(grammar)
 	first_set = tbl_gen.build_first_set()
 	follow_set = tbl_gen.build_follow_set(first_set)
-	first_plus_set, production_map, production_left_hand_map = tbl_gen.build_first_plus_set(first_set, follow_set)
+	first_plus_set, production_map, production_left_hand_map = tbl_gen.build_first_plus_set(first_set, follow_set, test_grammar = True)
 	ll1_table = tbl_gen.build_ll1_table(first_plus_set,production_left_hand_map)
 	yaml_gen = yaml_generator.YamlGenerator(grammar)
 	if arguments.t:
@@ -65,8 +64,8 @@ def main():
 		print "first_set:", first_set
 		print "follow_set:", follow_set
 		print "first_plus_set", first_plus_set
-	# if not arguments.t and not arguments.s:
-		# argument_parser.print_help()
+	if not arguments.t and not arguments.s:
+		argument_parser.print_help()
 
 if __name__ == '__main__':
 	main()

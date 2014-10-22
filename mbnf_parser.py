@@ -14,7 +14,7 @@ class MbnfParser():
 	def parse(self, rm_left_recur = False):
 		def tokzr_sent(text):
 			return [sent for sent in 
-				re.findall(r'(?ms)\s*(.*?(?=\s*;))', text) if sent is not ""]
+				re.findall(r'(?ms)\s*(.*?(?=\s*;))', text) if not sent == ""]
 
 		def toker_production(text):
 			return [Production(sent.split(":")[0].strip(), sent.split(":")[1].strip()) 
@@ -57,11 +57,11 @@ class MbnfParser():
 
 		def build_term(text):
 			""""""
-			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is "SYMBOL"])
+			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == "SYMBOL"])
 
 		def build_goal(text):
 			""""""
-			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type is "NON_TERM" and a_item.lexeme is not production.left_hand.lexeme])
+			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == "NON_TERM" and not a_item.lexeme == production.left_hand.lexeme])
 		
 		def is_goal_valid(goal_set):
 			""""""
@@ -73,11 +73,12 @@ class MbnfParser():
 		production_list = tokzr_alsoderives(toker_production(tokzr_sent(self.mbnf_input)))
 		non_term_set = build_non_term(production_list)
 		production_list = tokzr_right_hand(production_list)
-		if rm_left_recur:
-			rm_recur_engine = rm_recur.RmRecurEngine(production_list, non_term_set)
-			rm_recur_engine.remove_recur(rm_indirect_recur = False)
-			production_list = rm_recur_engine.get_prodc_list()
-			non_term_set = rm_recur_engine.get_non_term_set()
 		term_set = build_term(production_list)
 		goal = is_goal_valid(build_goal(production_list))
+		if rm_left_recur:
+			rm_recur_engine = rm_recur.RmRecurEngine(production_list, non_term_set)
+			rm_recur_engine.remove_recur(rm_indirect_recur = True)
+			production_list = rm_recur_engine.get_prodc_list()
+			non_term_set = rm_recur_engine.get_non_term_set()
+
 		return Grammar(term = term_set, non_term = non_term_set, production = production_list, goal = goal)
