@@ -83,10 +83,10 @@ class RmRecurEngine(object):
 				remove_list += sub_prodc_list
 				#add productions
 				for item in beta:
-					self.prodc_list.append(Production(left_hand = Token("NON_TERM", non_term), right_hand = item + [Token("NON_TERM", new_non_term)]))
+					self.prodc_list.append(Production(left_hand = Token(NON_TERM, non_term), right_hand = item + [Token(NON_TERM, new_non_term)]))
 				for item in alpha:
-					self.prodc_list.append(Production(left_hand = Token("NON_TERM", new_non_term), right_hand = item + [Token("NON_TERM", new_non_term)]))
-				self.prodc_list.append(Production(left_hand = Token("NON_TERM", new_non_term), right_hand = [Token("EPSILON", "EPSILON")]))
+					self.prodc_list.append(Production(left_hand = Token(NON_TERM, new_non_term), right_hand = item + [Token(NON_TERM, new_non_term)]))
+				self.prodc_list.append(Production(left_hand = Token(NON_TERM, new_non_term), right_hand = [Token(EPSILON, EPSILON)]))
 		#here update the whole list
 		self.prodc_list = [prodc for prodc in self.prodc_list if not prodc in remove_list]
 

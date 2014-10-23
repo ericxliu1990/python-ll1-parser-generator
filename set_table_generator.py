@@ -68,8 +68,8 @@ class SetTableGenerator(object):
 				for idx in sub_idx_list[1 : ]:
 					test_union &= first_plus_set[idx]
 					if not len(test_union) == 0:
-						print "Non-terminal", non_term, "has the same", test_union
-						return False
+						except_str = "\nThis is not a LL(1) grammar. \nNon-terminal '%s' has the same %s in its first plus sets." % (non_term, test_union)
+						raise Exception(except_str) 
 			return True
 
 		first_plus_set = {}
@@ -84,9 +84,7 @@ class SetTableGenerator(object):
 				first_plus_set[idx] = set(first_set[production.left_hand.lexeme])
 		if test_grammar:
 			if is_ll1_grammar():
-				return first_plus_set, production_map, production_left_hand_map
-			else:
-				raise Exception("This is not a LL(1) grammar")
+				return first_plus_set, production_map, production_left_hand_map				
 		else:
 			return first_plus_set, production_map, production_left_hand_map
 

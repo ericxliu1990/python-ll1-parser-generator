@@ -41,11 +41,11 @@ class MbnfParser():
 				if not is_valid(lexeme):
 					raise TypeError("%s is not a valid MBNF symbol." % lexeme)
 				if lexeme in non_term_set:
-					return Token("NON_TERM", lexeme)
+					return Token(NON_TERM, lexeme)
 				elif lexeme in ["EPSILON", "epsilon","Epsilon"]:
-					return Token("EPSILON", "EPSILON")
+					return Token(EPSILON, EPSILON)
 				else:
-					return Token("SYMBOL", lexeme)
+					return Token(SYMBOL, lexeme)
 
 			return [Production(tokenize(production.left_hand),
 				[tokenize(an_item.strip()) for an_item in production.right_hand.split()]) 
@@ -57,11 +57,11 @@ class MbnfParser():
 
 		def build_term(text):
 			""""""
-			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == "SYMBOL"])
+			return set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == SYMBOL])
 
 		def build_goal(text):
 			""""""
-			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == "NON_TERM" and not a_item.lexeme == production.left_hand.lexeme])
+			return set(non_term_set) - set([a_item.lexeme for production in text for a_item in production.right_hand if a_item.type == NON_TERM and not a_item.lexeme == production.left_hand.lexeme])
 		
 		def is_goal_valid(goal_set):
 			""""""

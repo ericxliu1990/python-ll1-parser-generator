@@ -4,6 +4,8 @@ from collections import namedtuple
 EOF = "<EOF>"
 EPSILON = "EPSILON"
 ERROR_MARKER = "--"
+SYMBOL = "SYMBOL"
+NON_TERM = "NON_TERM"
 
 class Production(namedtuple("Production",["left_hand", "right_hand"])):
 	"""docstring for Production"""
