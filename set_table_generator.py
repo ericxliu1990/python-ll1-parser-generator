@@ -62,15 +62,29 @@ class SetTableGenerator(object):
 						non_term_idx_map[prodc.left_hand.lexeme].append(idx)
 				return non_term_idx_map
 
-			non_term_idx_map = build_non_term_map()
-			for non_term, sub_idx_list in non_term_idx_map.items():
-				test_union = set(first_plus_set[sub_idx_list[0]])
-				for idx in sub_idx_list[1 : ]:
-					test_union &= first_plus_set[idx]
-					if not len(test_union) == 0:
-						except_str = "\nThis is not a LL(1) grammar. \nNon-terminal '%s' has the same %s in its first plus sets." % (non_term, test_union)
-						raise Exception(except_str) 
-			return True
+			def sub_idx_list_test(sub_idx_list):
+				if len(sub_idx_list) < 1:
+					return True 
+				else:
+					for idx, itm_1 in enumerate(sub_idx_list):
+						for itm_2 in sub_idx_list[idx + 1:]:
+							if not len(first_plus_set[itm_1] & first_plus_set[itm_2]) == 0:
+								# print first_plus_set[itm_1] & first_plus_set[itm_2], itm_1, itm_2
+								return False
+				return True
+
+			return all([sub_idx_list_test(sub_idx_list) for non_term, sub_idx_list in build_non_term_map().items() if len(sub_idx_list) > 1])
+
+		def get_first_plus_set(production):
+			a_first_plus_set = set([])
+			for item in production.right_hand:
+				a_first_plus_set |= first_set[item.lexeme]
+				if EPSILON not in first_set[item.lexeme]:
+					break
+				if item == production.right_hand[-1]:
+					a_first_plus_set -= set([EPSILON])
+					a_first_plus_set |= follow_set[production.left_hand.lexeme]
+			return a_first_plus_set
 
 		first_plus_set = {}
 		production_map = {}
@@ -78,25 +92,19 @@ class SetTableGenerator(object):
 		for idx, production in enumerate(self.grammar.production):
 			production_map[idx] = production
 			production_left_hand_map[idx] = production.left_hand.lexeme
-			if EPSILON in first_set[production.left_hand.lexeme]:
-				first_plus_set[idx] = first_set[production.left_hand.lexeme].union(follow_set[production.left_hand.lexeme])
-			else:
-				first_plus_set[idx] = set(first_set[production.left_hand.lexeme])
+			first_plus_set[idx] = get_first_plus_set(production)
 		if test_grammar:
-			if is_ll1_grammar():
-				return first_plus_set, production_map, production_left_hand_map				
-		else:
-			return first_plus_set, production_map, production_left_hand_map
+			if not is_ll1_grammar():
+				raise Exception("This is not a LL(1) grammar.") 			
+		return first_plus_set, production_map, production_left_hand_map
 
 	def build_ll1_table(self, first_plus_set, production_left_hand_map):
 		# ll1_table = OrderedDict({key: OrderedDict({key: ERROR_MARKER for key in self.grammar.term}) for key in self.grammar.non_term})
 		ll1_table = {key: {key: ERROR_MARKER for key in list(self.grammar.term) + [EOF]} for key in self.grammar.non_term}
 		# print "self.grammar.term", self.grammar.term
 		for key, production in first_plus_set.items():
-			for an_item in production:
-				# don't know this is right or wrong, just rule out epsilion
-				if not an_item == EPSILON:
-					ll1_table[production_left_hand_map[key]][an_item] = key
+			for item in production:
+					ll1_table[production_left_hand_map[key]][item] = key
 		# print build_symbal_map()
 		return ll1_table
 	
