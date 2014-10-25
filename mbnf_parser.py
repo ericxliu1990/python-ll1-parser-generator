@@ -12,6 +12,9 @@ class MbnfParser():
 		self.mbnf_input = file.read()
 
 	def parse(self, rm_left_recur = False):
+		def rm_comment(text):
+			return re.sub(re.compile("//.*?\n" ) ,"" ,text) 
+			
 		def tokzr_sent(text):
 			return [sent for sent in 
 				re.findall(r'(?ms)\s*(.*?(?=\s*;))', text) if not sent == ""]
@@ -69,8 +72,8 @@ class MbnfParser():
 				return goal_set.pop()
 			else:
 				raise ValueError(goal_set)
-
-		production_list = tokzr_alsoderives(toker_production(tokzr_sent(self.mbnf_input)))
+		
+		production_list = tokzr_alsoderives(toker_production(tokzr_sent(rm_comment(self.mbnf_input))))
 		non_term_set = build_non_term(production_list)
 		production_list = tokzr_right_hand(production_list)
 		term_set = build_term(production_list)
